@@ -32,17 +32,22 @@ class EntryError(Exception):
     """Raised when the review breaks a bounty rule or a write fails."""
 
 
+def check_length(text: str) -> None:
+    """Enforce the bounty length limit, reporting the overrun."""
+    if len(text) > MAX_ENTRY_LENGTH:
+        raise EntryError(
+            f"entry is {len(text)} characters, over the "
+            f"{MAX_ENTRY_LENGTH} character limit"
+        )
+
+
 def check_review(text: str) -> None:
     """Make sure the review is a legal entry before anything is written."""
     if not text.strip():
         raise EntryError("entry must not be empty")
     if text != text.strip():
         raise EntryError("entry must not have leading or trailing whitespace")
-    if len(text) > MAX_ENTRY_LENGTH:
-        raise EntryError(
-            f"entry is {len(text)} characters, over the "
-            f"{MAX_ENTRY_LENGTH} character limit"
-        )
+    check_length(text)
     if "\n" in text or "\r" in text:
         raise EntryError("entry must be a single line with no newlines")
 
